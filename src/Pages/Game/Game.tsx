@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Quiz_content from "../../Utilities/Questions.json";
-import { Swiper, SwiperSlide } from "swiper/react";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper/modules";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
@@ -9,16 +11,15 @@ import "swiper/css/navigation";
 
 import "../../Styles/swiper.css";
 
-import { Pagination, Navigation } from "swiper/modules";
-import { useNavigate } from "react-router-dom";
-import type { RootState } from "../../Utilities/Redux/Store";
 import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../../Utilities/Redux/Store";
 import { denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import {
   addAnswer,
   removeAnswer,
   resetAnswers,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
+import useScoreCounter from "../../Utilities/useScoreCounter";
 
 interface QuizI {
   id: string;
@@ -30,6 +31,7 @@ const Game = () => {
   const Nav = useNavigate();
   const dispatch = useDispatch();
   const [quizs, setQuizs] = useState<QuizI[]>([]);
+  const scoreCalculator = useScoreCounter();
 
   const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
 
@@ -39,29 +41,30 @@ const Game = () => {
 
   useEffect(() => {
     setQuizs(Quiz_content);
-    document.body.requestFullscreen();
 
     if (!allowEntry) {
       Nav("/");
-      document.exitFullscreen();
-    }
-    return () => {
-      allowEntry;
-    };
+    } else document.body.requestFullscreen();
   }, [allowEntry, Nav]);
 
-  console.log(quizs, "qwizess");
-
   const handleQuit = () => {
-    alert("Are you sure you want to quit");
-    dispatch(resetAnswers());
-    dispatch(denyEntry());
-    document.exitFullscreen();
-    Nav("/");
+    const confirmQuit = window.confirm("Are you sure you want to quit?");
+    if (confirmQuit) {
+      dispatch(resetAnswers());
+      dispatch(denyEntry());
+      Nav("/");
+    }
   };
 
-  const handleSubmit = () => {
-    Nav("/result");
+  const handleSubmit = async () => {
+    const score = scoreCalculator();
+    console.log("score value", score);
+
+    if (score) {
+      Nav("/result");
+    } else {
+      console.error("error in score counter");
+    }
   };
 
   const handleSelection = (QuestionId: string, selectedAns: string) => {
@@ -96,9 +99,10 @@ const Game = () => {
             </div>
 
             <div className="option-holder">
-              {elem.options.map((item) => (
+              {elem.options.map((item, index) => (
                 <button
                   type="button"
+                  key={index}
                   onClick={() => handleSelection(elem.id, item)}
                 >
                   {item}

@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface selectedAnswersState {
   selectedAnswers: { id: string; ans: string }[];
   totalScore: number;
+  message: string;
 }
 
 const initialState: selectedAnswersState = {
   selectedAnswers: [],
   totalScore: 0,
+  message: "",
 };
 
 export const selectedAnswersSlice = createSlice({
@@ -38,14 +40,32 @@ export const selectedAnswersSlice = createSlice({
       state.selectedAnswers = [];
     },
 
-    score: (state, action: PayloadAction<number>) => {
-      state.totalScore += action.payload;
+    scoreIncrement: (state) => {
+      state.totalScore += 1;
+    },
+
+    scoreDecrement: (state) => {
+      state.totalScore -= 1;
+    },
+
+    addMessage: (state, action: PayloadAction<string>) => {
+      state.message = action.payload;
+    },
+    removeMessage: (state) => {
+      state.message = "";
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addAnswer, removeAnswer, resetAnswers, score } =
-  selectedAnswersSlice.actions;
+export const {
+  addAnswer,
+  removeAnswer,
+  resetAnswers,
+  scoreIncrement,
+  scoreDecrement,
+  addMessage,
+  removeMessage,
+} = selectedAnswersSlice.actions;
 
 export default selectedAnswersSlice.reducer;
