@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export interface CounterState {
+export interface AuthState {
   isAuthorized: boolean;
 }
 
-const initialState: CounterState = {
+const initialState: AuthState = {
   isAuthorized: false,
 };
 

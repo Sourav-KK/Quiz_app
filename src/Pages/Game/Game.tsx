@@ -14,6 +14,11 @@ import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../Utilities/Redux/Store";
 import { useSelector, useDispatch } from "react-redux";
 import { denyEntry } from "../../Utilities/Redux/Slices/Auth";
+import {
+  addAnswer,
+  removeAnswer,
+  resetAnswers,
+} from "../../Utilities/Redux/Slices/Selected_Answers";
 
 interface QuizI {
   id: string;
@@ -23,10 +28,14 @@ interface QuizI {
 }
 const Game = () => {
   const Nav = useNavigate();
-  const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
   const dispatch = useDispatch();
-
   const [quizs, setQuizs] = useState<QuizI[]>([]);
+
+  const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
+
+  const selectedAnswers = useSelector(
+    (state: RootState) => state.Answers.selectedAnswers
+  );
 
   useEffect(() => {
     setQuizs(Quiz_content);
@@ -44,21 +53,36 @@ const Game = () => {
   console.log(quizs, "qwizess");
 
   const handleQuit = () => {
-    alert("are you sure");
-    document.exitFullscreen();
+    alert("Are you sure you want to quit");
+    dispatch(resetAnswers());
     dispatch(denyEntry());
+    document.exitFullscreen();
     Nav("/");
   };
 
   const handleSubmit = () => {
     Nav("/result");
   };
+
+  const handleSelection = (QuestionId: string, selectedAns: string) => {
+    dispatch(addAnswer({ id: QuestionId, ans: selectedAns }));
+  };
+
+  const handleRemoveAnswer = (questionId: string) => {
+    dispatch(removeAnswer(questionId));
+  };
+
+  const handleResetAnswers = () => {
+    dispatch(resetAnswers());
+  };
+
   return (
     <div className="swiper-holder">
       <Swiper
         pagination={{
           type: "fraction",
         }}
+        loop={true}
         navigation={true}
         modules={[Pagination, Navigation]}
         className="mySwiper"
@@ -73,7 +97,12 @@ const Game = () => {
 
             <div className="option-holder">
               {elem.options.map((item) => (
-                <button type="button">{item}</button>
+                <button
+                  type="button"
+                  onClick={() => handleSelection(elem.id, item)}
+                >
+                  {item}
+                </button>
               ))}
             </div>
 
@@ -81,7 +110,20 @@ const Game = () => {
               <button type="button" className="quit-btn" onClick={handleQuit}>
                 Quit
               </button>
-              {elem.id === "10" && (
+
+              {selectedAnswers.some((answer) => answer.id === elem.id) && (
+                <button onClick={() => handleRemoveAnswer(elem.id)}>
+                  Remove Answer
+                </button>
+              )}
+              <button
+                type="button"
+                className="quit-btn"
+                onClick={handleResetAnswers}
+              >
+                Reset
+              </button>
+              {elem.id === "10" && selectedAnswers.length > 0 && (
                 <>
                   <button
                     type="button"

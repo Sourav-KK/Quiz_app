@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import Authorization from "./Slices/Auth";
+import SelectedAns from "./Slices/Selected_Answers";
 
 export const store = configureStore({
   reducer: {
     Auth: Authorization,
+    Answers: SelectedAns,
   },
 });
 
