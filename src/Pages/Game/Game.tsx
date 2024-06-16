@@ -30,9 +30,11 @@ const Game = () => {
 
   useEffect(() => {
     setQuizs(Quiz_content);
+    document.body.requestFullscreen();
 
     if (!allowEntry) {
       Nav("/");
+      document.exitFullscreen();
     }
     return () => {
       allowEntry;
@@ -43,10 +45,14 @@ const Game = () => {
 
   const handleQuit = () => {
     alert("are you sure");
+    document.exitFullscreen();
     dispatch(denyEntry());
     Nav("/");
   };
 
+  const handleSubmit = () => {
+    Nav("/result");
+  };
   return (
     <div className="swiper-holder">
       <Swiper
@@ -77,7 +83,11 @@ const Game = () => {
               </button>
               {elem.id === "10" && (
                 <>
-                  <button type="button" className="submit-btn">
+                  <button
+                    type="button"
+                    className="submit-btn"
+                    onClick={handleSubmit}
+                  >
                     Submit
                   </button>
                 </>
