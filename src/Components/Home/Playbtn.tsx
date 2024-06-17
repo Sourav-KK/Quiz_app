@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { alllowEntry } from "../../Utilities/Redux/Slices/Auth";
 import { useNavigate } from "react-router-dom";
+import "../../Styles/Playbtn.css";
 
 const Playbtn = () => {
   const Nav = useNavigate();
@@ -13,8 +14,8 @@ const Playbtn = () => {
   };
 
   return (
-    <div className="flex">
-      <button type="button" onClick={handlePlay}>
+    <div className="playbtnholder">
+      <button type="button" onClick={handlePlay} className="play-btnn">
         Play
       </button>
     </div>

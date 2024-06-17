@@ -7,18 +7,25 @@
 
 li {
   text-align: left;
-  color: rgb(244, 128, 128);
+  color: rgb(245, 234, 234);
 }
 
 .start-holder {
   border: 2px solid;
   border-radius: 5%;
   padding: 10px;
+  border-radius: 5%;
+  border: 2px solid white;
+  background: #547ae3;
 }
 
 .home-Heading {
-  color: rgb(125, 125, 222);
+  color: white;
   text-transform: uppercase;
   text-decoration: underline double rgb(223, 215, 215);
   text-underline-offset: 10px;
+}
+
+.instruction-remainder {
+  color: azure
 }

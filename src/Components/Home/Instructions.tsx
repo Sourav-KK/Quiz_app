@@ -1,8 +1,10 @@
+import "../../Styles/instructions.css";
+
 const Instructions = () => {
   return (
     <div className="instructions">
-      <div className="">
-        <h3>Instructions</h3>
+      <div className="inst-heading-holder">
+        <h3 className="inst-heading">Instructions</h3>
       </div>
       <ul>
         <li> There are a total of 10 questions.</li>
