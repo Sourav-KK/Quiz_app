@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Quiz_content from "../../Utilities/Questions.json";
 
@@ -30,8 +30,13 @@ interface QuizI {
 const Game = () => {
   const Nav = useNavigate();
   const dispatch = useDispatch();
-  const [quizs, setQuizs] = useState<QuizI[]>([]);
   const scoreCalculator = useScoreCounter();
+
+  const [quizs, setQuizs] = useState<QuizI[]>([]);
+  const [timer, setTimer] = useState(
+    parseInt(localStorage.getItem("timer") || "6000") // Set default timer value
+  );
+  const intervalId = useRef(0); // Redirect when the timer reaches 0
 
   const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
 
@@ -42,10 +47,37 @@ const Game = () => {
   useEffect(() => {
     setQuizs(Quiz_content);
 
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        if (window.confirm("Are you sure you want to exit fullscreen?")) {
+          Nav("/"); // Redirects user if they confirm
+        } else {
+          document.documentElement.requestFullscreen(); // Keeps the user in fullscreen mode
+        }
+      }
+    };
+
     if (!allowEntry) {
       Nav("/");
-    } else document.body.requestFullscreen();
-  }, [allowEntry, Nav]);
+    } else {
+      document.body.requestFullscreen();
+
+      localStorage.setItem("timer", timer.toString());
+      if (timer === 0) {
+        Nav("/result"); // Replace with your desired path
+      } else {
+        // Set up the interval only if the timer is not yet finished
+        intervalId.current = setInterval(() => {
+          setTimer((prevTimer) => prevTimer - 1);
+        }, 1000);
+      }
+      document.addEventListener("fullscreenchange", handleFullscreenChange);
+    }
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      clearInterval(intervalId.current);
+    };
+  }, [allowEntry, Nav, timer]);
 
   const handleQuit = () => {
     const confirmQuit = window.confirm("Are you sure you want to quit?");
