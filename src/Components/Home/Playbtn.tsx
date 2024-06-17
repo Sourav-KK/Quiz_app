@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import { useNavigate } from "react-router-dom";
-import "../../Styles/Playbtn.css";
 import Swal from "sweetalert2";
 
 const Playbtn = () => {

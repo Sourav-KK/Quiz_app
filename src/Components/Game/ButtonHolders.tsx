@@ -6,7 +6,7 @@ const ButtonHolders = ({
   handleRemoveAnswer,
   elem,
   selectedAnswers,
-  handleSubmit
+  handleSubmit,
 }: ButtonHoldersI) => {
   return (
     <>
@@ -14,10 +14,6 @@ const ButtonHolders = ({
         <button type="button" className="quit-btn" onClick={handleQuit}>
           Quit
         </button>
-        <button type="button" className="quit-btn" onClick={handleResetAnswers}>
-          Reset
-        </button>
-
         <button
           onClick={() => handleRemoveAnswer(elem.id)}
           className="remove-btn"
@@ -25,15 +21,21 @@ const ButtonHolders = ({
         >
           Remove Answer
         </button>
+        <button type="button" className="quit-btn" onClick={handleResetAnswers}>
+          Reset
+        </button>
       </div>
 
       <div className="submit-btn-container">
-        {elem.id === "10" && selectedAnswers.length > 0 && (
-          <>
-            <button type="button" className="submit-btn" onClick={handleSubmit}>
-              Submit
-            </button>
-          </>
+        {elem.id === "10" && (
+          <button
+            type="button"
+            className="submit-btn"
+            onClick={handleSubmit}
+            disabled={!(selectedAnswers.length > 0)}
+          >
+            Submit
+          </button>
         )}
       </div>
     </>

@@ -29,3 +29,15 @@ li {
 .instruction-remainder {
   color: azure
 }
+
+.play-btnn {
+  background: #2bb423;
+  text-transform: uppercase;
+}
+
+.inst-heading {
+  text-transform: uppercase;
+  color: azure;
+  text-decoration: underline;
+  text-underline-offset: 5px
+}

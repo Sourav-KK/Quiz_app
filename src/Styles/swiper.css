@@ -7,7 +7,7 @@ body {
 }
 
 .swiper-holder {
-      height: 400px;
+      height: 500px;
 }
 
 .swiper {
@@ -16,6 +16,7 @@ body {
       border-radius: 20px;
       box-shadow: 10px 1px 20px 1px rgb(32, 128, 197);
       padding: 5px;
+
 }
 
 .swiper-slide {
@@ -66,3 +67,24 @@ body {
 .submit-btn {
       background: rgb(27, 176, 27);
 }
+
+.question-holder {
+      color: rgb(24, 191, 119);
+      text-transform: uppercase;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-size: larger;
+}
+
+.time-holder {
+      border: 2px solid teal;
+      padding: 5px;
+      border-radius: 50%;
+}
+
+.time {
+      color: rgb(226, 35, 134);
+      font-weight: 500;
+}.remove-btn {
+      background: teal;
+    }
+    

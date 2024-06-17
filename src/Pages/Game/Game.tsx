@@ -17,7 +17,9 @@ import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import {
   addAnswer,
   removeAnswer,
+  removeMessage,
   resetAnswers,
+  scoreReset,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
 import useScoreCounter from "../../Utilities/useScoreCounter";
 import useTimerCalculator from "../../Utilities/useTimerCalculator";
@@ -36,7 +38,7 @@ const Game = () => {
   const [quizs, setQuizs] = useState<QuizI[]>([]);
 
   const [timer, setTimer] = useState(
-    parseInt(localStorage.getItem("timer") || "3") // Sets default timer
+    parseInt(localStorage.getItem("timer") || "600") // Sets default timer
   );
   const timeerr = useTimerCalculator(timer);
 
@@ -83,7 +85,7 @@ const Game = () => {
     }, 1000);
 
     // timer function
-    if (timer === 0) {
+    if (timer <= 0) {
       clearInterval(intervalId);
       const score = scoreCalculator();
       console.log(score);
@@ -95,6 +97,9 @@ const Game = () => {
       })
         .then((result) => {
           if (result.isConfirmed) {
+            document.exitFullscreen();
+            Nav("/result");
+          } else {
             document.exitFullscreen();
             Nav("/result");
           }
@@ -112,15 +117,30 @@ const Game = () => {
       clearInterval(intervalId);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, [timer, dispatch, Nav, allowEntry, scoreCalculator]);
+    // adding scoreCalculator to the dependency array causes the app to crash and misbehave because of infite renders
+  }, [timer, dispatch, Nav, allowEntry]);
 
   const handleQuit = () => {
-    const confirmQuit = window.confirm("Are you sure you want to quit?");
-    if (confirmQuit) {
-      dispatch(resetAnswers());
-      dispatch(denyEntry());
-      Nav("/");
-    }
+    Swal.fire({
+      title: "Are you sure you want to exit?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.exitFullscreen();
+        dispatch(resetAnswers());
+        dispatch(scoreReset());
+        dispatch(removeMessage());
+        dispatch(alllowEntry());
+        Nav("/");
+      } else {
+        result.dismiss === Swal.DismissReason.cancel;
+      }
+    });
   };
 
   const handleSubmit = () => {

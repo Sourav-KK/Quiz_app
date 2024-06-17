@@ -5,7 +5,6 @@ import {
   scoreIncrement,
   addMessage,
   removeMessage,
-  scoreReset,
 } from "./Redux/Slices/Selected_Answers";
 
 const useScoreCounter = () => {
@@ -16,7 +15,6 @@ const useScoreCounter = () => {
     (state: RootState) => state.Answers.selectedAnswers
   );
 
-  
   const scoreCalulate = () => {
     try {
       dispatch(removeMessage());
