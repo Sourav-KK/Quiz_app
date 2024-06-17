@@ -150,7 +150,7 @@ const Game = () => {
     if (score) {
       dispatch(resetAnswers());
       dispatch(denyEntry());
-      Nav("/result");
+      Nav("/result");   
     } else {
       console.error("error in score counter");
     }
