@@ -5,6 +5,7 @@ import {
   scoreIncrement,
   addMessage,
   removeMessage,
+  scoreReset,
 } from "./Redux/Slices/Selected_Answers";
 
 const useScoreCounter = () => {
@@ -32,22 +33,23 @@ const useScoreCounter = () => {
         });
 
         if (totScore === 0) {
-          dispatch(addMessage("Keep trying"));
+          dispatch(addMessage("Can do better"));
         } else if (totScore < 3) {
-          dispatch(addMessage("Better luck next time"));
+          dispatch(addMessage("Keep trying"));
         } else if (totScore < 10 && totScore > 2) {
           dispatch(addMessage("Great"));
         } else if (totScore === 10) {
           dispatch(addMessage("Excellent!!!"));
         }
-
         return true;
+      } else {
+        dispatch(addMessage("You havn't answerd any questions"));
+        return false;
       }
-      dispatch(addMessage("An error occured. Please try again"));
-      return false;
     } catch (error) {
       console.error("errorin score counter");
       dispatch(addMessage("An error occurred. Please try again"));
+      dispatch(scoreReset());
       return false;
     }
   };

@@ -9,7 +9,7 @@ const initialState: AuthState = {
 };
 
 export const AuthSlice = createSlice({
-  name: "counter",
+  name: "AuthSlice",
   initialState,
   reducers: {
     alllowEntry: (state) => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Quiz_content from "../../Utilities/Questions.json";
 
@@ -13,20 +13,21 @@ import "../../Styles/swiper.css";
 
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../Utilities/Redux/Store";
-import { denyEntry } from "../../Utilities/Redux/Slices/Auth";
+import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import {
   addAnswer,
   removeAnswer,
   resetAnswers,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
 import useScoreCounter from "../../Utilities/useScoreCounter";
+import useTimerCalculator from "../../Utilities/useTimerCalculator";
 
-interface QuizI {
-  id: string;
-  question: string;
-  options: string[];
-  answer: string;
-}
+import Swal from "sweetalert2";
+import Options from "../../Components/Game/Options";
+import { QuizI } from "../../Utilities/Interface";
+import CountDown from "../../Components/Game/CountDown";
+import ButtonHolders from "../../Components/Game/ButtonHolders";
+
 const Game = () => {
   const Nav = useNavigate();
   const dispatch = useDispatch();
@@ -34,9 +35,9 @@ const Game = () => {
 
   const [quizs, setQuizs] = useState<QuizI[]>([]);
   const [timer, setTimer] = useState(
-    parseInt(localStorage.getItem("timer") || "6000") // Set default timer value
+    parseInt(localStorage.getItem("timer") || "3") // Sets default timer
   );
-  const intervalId = useRef(0); // Redirect when the timer reaches 0
+  const timeerr = useTimerCalculator(timer);
 
   const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
 
@@ -45,39 +46,57 @@ const Game = () => {
   );
 
   useEffect(() => {
-    setQuizs(Quiz_content);
-
-    const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        if (window.confirm("Are you sure you want to exit fullscreen?")) {
-          Nav("/"); // Redirects user if they confirm
-        } else {
-          document.documentElement.requestFullscreen(); // Keeps the user in fullscreen mode
-        }
-      }
-    };
-
+    //check user is authorised
     if (!allowEntry) {
       Nav("/");
-    } else {
-      document.body.requestFullscreen();
-
-      localStorage.setItem("timer", timer.toString());
-      if (timer === 0) {
-        Nav("/result"); // Replace with your desired path
-      } else {
-        // Set up the interval only if the timer is not yet finished
-        intervalId.current = setInterval(() => {
-          setTimer((prevTimer) => prevTimer - 1);
-        }, 1000);
-      }
-      document.addEventListener("fullscreenchange", handleFullscreenChange);
     }
+    // check if fullscreen is exited
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        Swal.fire({
+          title:
+            "Game will be terminated if you exit fullscreeen mode. Are you sure?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            dispatch(alllowEntry());
+            document.exitFullscreen();
+            Nav("/");
+          } else {
+            result.dismiss === Swal.DismissReason.cancel;
+          }
+        });
+      }
+    };
+    setQuizs(Quiz_content);
+
+    localStorage.setItem("timer", timer.toString());
+
+    const intervalId = setInterval(() => {
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+    // timer function
+    if (timer === 0) {
+      console.log("timer expired");
+      const score = scoreCalculator();
+      console.log("score:", score);
+      clearInterval(intervalId);
+      Nav("/result");
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
     return () => {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      clearInterval(intervalId.current);
+      clearInterval(intervalId);
     };
-  }, [allowEntry, Nav, timer]);
+  }, [timer, dispatch, Nav, allowEntry, scoreCalculator]);
 
   const handleQuit = () => {
     const confirmQuit = window.confirm("Are you sure you want to quit?");
@@ -88,11 +107,13 @@ const Game = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     const score = scoreCalculator();
     console.log("score value", score);
 
     if (score) {
+      dispatch(resetAnswers());
+      dispatch(denyEntry());
       Nav("/result");
     } else {
       console.error("error in score counter");
@@ -117,48 +138,36 @@ const Game = () => {
         pagination={{
           type: "fraction",
         }}
-        loop={true}
         navigation={true}
         modules={[Pagination, Navigation]}
         className="mySwiper"
       >
         {quizs.map((elem) => (
           <SwiperSlide key={elem.id} className="quiz-holder">
+            <CountDown timeerr={timeerr} />
+
             <div className="question-holder">
               <h3>
                 {elem.id}.{elem.question}
               </h3>
             </div>
 
-            <div className="option-holder">
-              {elem.options.map((item, index) => (
-                <button
-                  type="button"
-                  key={index}
-                  onClick={() => handleSelection(elem.id, item)}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
+            <Options
+              elem={elem}
+              handleSelection={handleSelection}
+              selectedAnswers={selectedAnswers}
+            />
 
-            <div className="quiz-btn-holder">
-              <button type="button" className="quit-btn" onClick={handleQuit}>
-                Quit
-              </button>
+            <ButtonHolders
+              elem={elem}
+              handleQuit={handleQuit}
+              handleRemoveAnswer={handleRemoveAnswer}
+              handleResetAnswers={handleResetAnswers}
+              selectedAnswers={selectedAnswers}
+              handleSubmit={handleSubmit}
+            />
 
-              {selectedAnswers.some((answer) => answer.id === elem.id) && (
-                <button onClick={() => handleRemoveAnswer(elem.id)}>
-                  Remove Answer
-                </button>
-              )}
-              <button
-                type="button"
-                className="quit-btn"
-                onClick={handleResetAnswers}
-              >
-                Reset
-              </button>
+            <div className="submit-btn-container">
               {elem.id === "10" && selectedAnswers.length > 0 && (
                 <>
                   <button

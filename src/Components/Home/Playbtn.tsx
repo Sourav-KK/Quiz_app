@@ -1,7 +1,8 @@
 import { useDispatch } from "react-redux";
-import { alllowEntry } from "../../Utilities/Redux/Slices/Auth";
+import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import { useNavigate } from "react-router-dom";
 import "../../Styles/Playbtn.css";
+import Swal from "sweetalert2";
 
 const Playbtn = () => {
   const Nav = useNavigate();
@@ -9,8 +10,23 @@ const Playbtn = () => {
   const dispatch = useDispatch();
 
   const handlePlay = () => {
-    dispatch(alllowEntry());
-    Nav("/play");
+    Swal.fire({
+      title: "Permission to switch to fullscreen mode?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(alllowEntry());
+        document.documentElement.requestFullscreen();
+        Nav("/play");
+      } else {
+        dispatch(denyEntry());
+        Nav("/");
+      }
+    });
   };
 
   return (

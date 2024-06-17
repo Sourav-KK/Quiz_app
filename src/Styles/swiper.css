@@ -11,17 +11,21 @@ body {
 }
 
 .swiper {
-      width: 100%;
+      width: 70%;
       height: 100%;
+      border-radius: 20px;
+      box-shadow: 10px 1px 20px 1px rgb(32, 128, 197);
+      padding: 5px;
 }
 
 .swiper-slide {
       text-align: center;
       font-size: 18px;
-      background: #fff;
+      background: #f8f6f6;
       display: flex;
       justify-content: center;
       align-items: center;
+
 }
 
 .swiper-slide img {
@@ -42,8 +46,17 @@ body {
       gap: 10px;
 }
 
+.option-btn {
+      background: #547ae3;
+}
+
 .quiz-btn-holder {
       padding: 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      gap: 3px;
+
 }
 
 .quit-btn {

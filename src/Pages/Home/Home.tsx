@@ -1,11 +1,16 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Instructions from "../../Components/Home/Instructions";
 import Playbtn from "../../Components/Home/Playbtn";
-import "../../Styles/App.css";
 import type { RootState } from "../../Utilities/Redux/Store";
-import { useSelector, useDispatch } from "react-redux";
 import { denyEntry } from "../../Utilities/Redux/Slices/Auth";
-import { useNavigate } from "react-router-dom";
+import {
+  resetAnswers,
+  scoreReset,
+  removeMessage,
+} from "../../Utilities/Redux/Slices/Selected_Answers";
+import "../../Styles/App.css";
 
 function App() {
   const Nav = useNavigate();
@@ -14,6 +19,11 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    localStorage.removeItem("timer");
+    dispatch(resetAnswers());
+    dispatch(scoreReset());
+    dispatch(removeMessage());
+
     if (allowEntry) {
       dispatch(denyEntry());
 
@@ -22,7 +32,7 @@ function App() {
     return () => {
       allowEntry;
     };
-  }, []);
+  }, [allowEntry, dispatch, Nav]);
 
   return (
     <div className="main">
