@@ -44,8 +44,8 @@ export const selectedAnswersSlice = createSlice({
       state.totalScore += 1;
     },
 
-    scoreDecrement: (state) => {
-      state.totalScore -= 1;
+    scoreReset: (state) => {
+      state.totalScore = 0;
     },
 
     addMessage: (state, action: PayloadAction<string>) => {
@@ -63,7 +63,7 @@ export const {
   removeAnswer,
   resetAnswers,
   scoreIncrement,
-  scoreDecrement,
+  scoreReset,
   addMessage,
   removeMessage,
 } = selectedAnswersSlice.actions;

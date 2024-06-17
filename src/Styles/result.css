@@ -1,6 +1,36 @@
 .result-holder {
       padding: 20px;
       border-radius: 5%;
-      border: 2px solid;
-      text-align: left;
+      border: 2px solid white;
+      background: #547ae3;
+      width: 300px;
+      height: 300px;
+}
+
+.score-comment {
+      font-size: xx-large;
+      color: whitesmoke;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.final-result {
+      color: white;
+      text-decoration: underline;
+      text-underline-offset: 5px;
+
+}
+
+.score-point {
+      font-size: xx-large;
+}
+
+.return-btn-holder {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+}
+
+.gohomebtn {
+      background: #132963;
+      border: 1px solid white
 }
