@@ -16,18 +16,17 @@ const useScoreCounter = () => {
     (state: RootState) => state.Answers.selectedAnswers
   );
 
+  
   const scoreCalulate = () => {
     try {
       dispatch(removeMessage());
 
       if (answers.length > 0) {
         answers.forEach((elem) => {
-          console.log("in foreach");
           const question = Quiz_content.find((q) => q.id === elem.id);
 
           // If question found and selected answer matches correct answer
           if (question && elem.ans === question.answer) {
-            console.log("same anser");
             dispatch(scoreIncrement());
           }
         });
@@ -48,8 +47,8 @@ const useScoreCounter = () => {
       }
     } catch (error) {
       console.error("errorin score counter");
-      dispatch(addMessage("An error occurred. Please try again"));
-      dispatch(scoreReset());
+      // dispatch(addMessage("An error occurred. Please try again"));
+      // dispatch(scoreReset());
       return false;
     }
   };

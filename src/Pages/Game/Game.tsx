@@ -34,6 +34,7 @@ const Game = () => {
   const scoreCalculator = useScoreCounter();
 
   const [quizs, setQuizs] = useState<QuizI[]>([]);
+
   const [timer, setTimer] = useState(
     parseInt(localStorage.getItem("timer") || "3") // Sets default timer
   );
@@ -83,18 +84,33 @@ const Game = () => {
 
     // timer function
     if (timer === 0) {
-      console.log("timer expired");
-      const score = scoreCalculator();
-      console.log("score:", score);
       clearInterval(intervalId);
-      Nav("/result");
+      const score = scoreCalculator();
+      console.log(score);
+
+      Swal.fire({
+        icon: "info",
+        title: "Times up !!!",
+        text: "Press OK to see results!",
+      })
+        .then((result) => {
+          if (result.isConfirmed) {
+            document.exitFullscreen();
+            Nav("/result");
+          }
+        })
+        .catch((err) => {
+          console.error("err in sweeet laert:", err);
+          document.exitFullscreen();
+          Nav("/result");
+        });
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
 
     return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
       clearInterval(intervalId);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, [timer, dispatch, Nav, allowEntry, scoreCalculator]);
 
@@ -166,20 +182,6 @@ const Game = () => {
               selectedAnswers={selectedAnswers}
               handleSubmit={handleSubmit}
             />
-
-            <div className="submit-btn-container">
-              {elem.id === "10" && selectedAnswers.length > 0 && (
-                <>
-                  <button
-                    type="button"
-                    className="submit-btn"
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </button>
-                </>
-              )}
-            </div>
           </SwiperSlide>
         ))}
       </Swiper>

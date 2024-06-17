@@ -1,13 +1,14 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import "../../Styles/result.css";
 import { RootState } from "../../Utilities/Redux/Store";
+import { denyEntry } from "../../Utilities/Redux/Slices/Auth";
 import {
   resetAnswers,
   removeMessage,
   scoreReset,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
-import { useEffect } from "react";
+import "../../Styles/result.css";
 
 const Result = () => {
   const totScore = useSelector((state: RootState) => state.Answers.totalScore);
@@ -17,19 +18,14 @@ const Result = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    (() => {
-      document.exitFullscreen();
-    })();
-
+    dispatch(denyEntry());
     return () => {};
-  }, []);
+  }, [dispatch]);
 
   const handleCLick = () => {
     dispatch(resetAnswers());
     dispatch(removeMessage());
     dispatch(scoreReset());
-
-    document.exitFullscreen();
     Navigate("/");
   };
 
