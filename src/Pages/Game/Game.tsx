@@ -59,7 +59,26 @@ const Game = () => {
   useEffect(() => {
     if (window.performance.navigation) {
       console.log("page reloaded");
-      setIsReloaded(true);
+
+      Swal.fire({
+        title: "Refreshing the page can reset your game data. Are you sure?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(alllowEntry());
+          document.exitFullscreen();
+          setIsReloaded(true);
+          Nav("/");
+        } else {
+          document.body.requestFullscreen();
+          result.dismiss === Swal.DismissReason.cancel;
+        }
+      });
     }
     return () => {
       setIsReloaded(false);
