@@ -193,10 +193,30 @@ const Game = () => {
     console.log("score value", score);
 
     if (score) {
-      dispatch(ressetCurrQustion());
-      dispatch(resetAnswers());
-      dispatch(denyEntry());
-      Nav("/result");
+      Swal.fire({
+        title: "Ready to submit?",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.exitFullscreen()
+          dispatch(ressetCurrQustion());
+          dispatch(resetAnswers());
+          dispatch(scoreReset());
+          dispatch(removeMessage());
+          // dispatch(alllowEntry());
+          dispatch(denyEntry());
+          Nav("/result");
+        } else if (result.isDismissed) {
+          result.dismiss === Swal.DismissReason.cancel;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel;
+        }
+      });
     } else {
       console.error("error in score counter");
     }
