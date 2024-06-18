@@ -4,12 +4,14 @@ export interface selectedAnswersState {
   selectedAnswers: { id: string; ans: string }[];
   totalScore: number;
   message: string;
+  currentQuestion: number;
 }
 
 const initialState: selectedAnswersState = {
   selectedAnswers: [],
   totalScore: 0,
   message: "",
+  currentQuestion: 0,
 };
 
 export const selectedAnswersSlice = createSlice({
@@ -54,6 +56,13 @@ export const selectedAnswersSlice = createSlice({
     removeMessage: (state) => {
       state.message = "";
     },
+
+    setCurrQustion: (state, action: PayloadAction<number>) => {
+      state.currentQuestion = action.payload;
+    },
+    ressetCurrQustion: (state) => {
+      state.currentQuestion = 0;
+    },
   },
 });
 
@@ -66,6 +75,8 @@ export const {
   scoreReset,
   addMessage,
   removeMessage,
+  ressetCurrQustion,
+  setCurrQustion,
 } = selectedAnswersSlice.actions;
 
 export default selectedAnswersSlice.reducer;

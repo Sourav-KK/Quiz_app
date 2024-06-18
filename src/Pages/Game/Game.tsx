@@ -19,7 +19,9 @@ import {
   removeAnswer,
   removeMessage,
   resetAnswers,
+  ressetCurrQustion,
   scoreReset,
+  setCurrQustion,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
 import useScoreCounter from "../../Utilities/useScoreCounter";
 import useTimerCalculator from "../../Utilities/useTimerCalculator";
@@ -44,9 +46,25 @@ const Game = () => {
 
   const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
 
+  const currQustionId = useSelector(
+    (state: RootState) => state.Answers.currentQuestion
+  );
+
   const selectedAnswers = useSelector(
     (state: RootState) => state.Answers.selectedAnswers
   );
+
+  const [isReloaded, setIsReloaded] = useState(false);
+
+  useEffect(() => {
+    if (window.performance.navigation) {
+      console.log("page reloaded");
+      setIsReloaded(true);
+    }
+    return () => {
+      setIsReloaded(false);
+    };
+  }, [isReloaded]);
 
   useEffect(() => {
     //check user is authorised
@@ -97,15 +115,18 @@ const Game = () => {
       })
         .then((result) => {
           if (result.isConfirmed) {
+            dispatch(ressetCurrQustion());
             document.exitFullscreen();
             Nav("/result");
           } else {
+            dispatch(ressetCurrQustion());
             document.exitFullscreen();
             Nav("/result");
           }
         })
         .catch((err) => {
           console.error("err in sweeet laert:", err);
+          dispatch(ressetCurrQustion());
           document.exitFullscreen();
           Nav("/result");
         });
@@ -132,6 +153,7 @@ const Game = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         document.exitFullscreen();
+        dispatch(ressetCurrQustion());
         dispatch(resetAnswers());
         dispatch(scoreReset());
         dispatch(removeMessage());
@@ -148,9 +170,10 @@ const Game = () => {
     console.log("score value", score);
 
     if (score) {
+      dispatch(ressetCurrQustion());
       dispatch(resetAnswers());
       dispatch(denyEntry());
-      Nav("/result");   
+      Nav("/result");
     } else {
       console.error("error in score counter");
     }
@@ -168,6 +191,11 @@ const Game = () => {
     dispatch(resetAnswers());
   };
 
+  const handleCurrentQ = (Qid: number) => {
+    console.log("Qid:", Qid);
+    dispatch(setCurrQustion(Qid));
+  };
+
   return (
     <div className="swiper-holder">
       <Swiper
@@ -177,9 +205,15 @@ const Game = () => {
         navigation={true}
         modules={[Pagination, Navigation]}
         className="mySwiper"
+        initialSlide={!isReloaded ? currQustionId : 0}
+        onRealIndexChange={(element) => handleCurrentQ(element.activeIndex)}
       >
         {quizs.map((elem) => (
-          <SwiperSlide key={elem.id} className="quiz-holder">
+          <SwiperSlide
+            key={elem.id}
+            className="quiz-holder"
+            id={elem.id + "qstn"}
+          >
             <CountDown timeerr={timeerr} />
 
             <div className="question-holder">
