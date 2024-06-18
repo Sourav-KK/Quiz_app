@@ -18,10 +18,25 @@ const ButtonHolders = ({
           onClick={() => handleRemoveAnswer(elem.id)}
           className="remove-btn"
           disabled={!selectedAnswers.some((answer) => answer.id === elem.id)}
+          title={
+            !selectedAnswers.some((answer) => answer.id === elem.id)
+              ? "Select an answer first"
+              : "Click to deselect"
+          }
         >
-          Remove Answer
+          Deselect
         </button>
-        <button type="button" className="quit-btn" onClick={handleResetAnswers}>
+        <button
+          type="button"
+          className="quit-btn"
+          onClick={handleResetAnswers}
+          disabled={!(selectedAnswers.length > 0)}
+          title={
+            !(selectedAnswers.length > 0)
+              ? "Select an answer first"
+              : "Click to Reset"
+          }
+        >
           Reset
         </button>
       </div>
@@ -33,6 +48,11 @@ const ButtonHolders = ({
             className="submit-btn"
             onClick={handleSubmit}
             disabled={!(selectedAnswers.length > 0)}
+            title={
+              !(selectedAnswers.length > 0)
+                ? "Select an answer first"
+                : "Click to submit"
+            }
           >
             Submit
           </button>

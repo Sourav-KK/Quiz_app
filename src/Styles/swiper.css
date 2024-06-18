@@ -7,15 +7,17 @@ body {
 }
 
 .swiper-holder {
-      height: 500px;
+      height: 100%;
+      width: 100%;
+      border: 2px solid #547ae3;
 }
 
 .swiper {
-      width: 70%;
+      width: 80%;
       height: 100%;
       border-radius: 20px;
       box-shadow: 10px 1px 20px 1px rgb(32, 128, 197);
-      padding: 5px;
+      padding: 2rem;
 
 }
 
@@ -26,7 +28,8 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
-
+      padding-top: 2rem;
+      padding-bottom: 2rem;
 }
 
 .swiper-slide img {
@@ -34,6 +37,13 @@ body {
       width: 100%;
       height: 100%;
       object-fit: cover;
+}
+
+
+.time-holder {
+      border: 2px solid teal;
+      padding: 5px;
+      border-radius: 50%;
 }
 
 .quiz-holder {
@@ -57,7 +67,6 @@ body {
       flex-direction: row;
       justify-content: space-evenly;
       gap: 3px;
-
 }
 
 .quit-btn {
@@ -75,16 +84,62 @@ body {
       font-size: larger;
 }
 
-.time-holder {
-      border: 2px solid teal;
-      padding: 5px;
-      border-radius: 50%;
-}
-
 .time {
       color: rgb(226, 35, 134);
       font-weight: 500;
-}.remove-btn {
+}
+
+.remove-btn {
       background: teal;
-    }
-    
+}
+
+
+/* Small devices such as large phones (640px and up) */
+@media only screen and (max-width: 640px) {
+      .swiper-slide {
+            flex-direction: column;
+            row-gap: 1em;
+      }
+
+      .question-holder {
+            font-size: medium;
+      }
+
+      .option-holder {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            font-size: medium;
+      }
+
+
+      .quit-btn {
+            background: rgb(200, 46, 46);
+            max-height: 3rem;
+            font-size: medium;
+      }
+
+
+      .remove-btn {
+            background: teal;
+            max-height: 3rem;
+            font-size: medium;
+      }
+
+}
+
+/* 
+/* Medium devices such as tablets (768px and up) */
+/* @media only screen and (min-width: 768px) {
+      ...
+} */
+
+/* Large devices such as laptops (1024px and up) */
+/* @media only screen and (min-width: 1024px) {
+      ...
+} */
+
+/* Largest devices such as desktops (1280px and up) */
+/* @media only screen and (min-width: 1280px) {
+      ...
+} */

@@ -74,6 +74,10 @@ const Game = () => {
           document.exitFullscreen();
           setIsReloaded(true);
           Nav("/");
+        }
+        if (result.isDismissed) {
+          document.body.requestFullscreen();
+          result.dismiss === Swal.DismissReason.cancel;
         } else {
           document.body.requestFullscreen();
           result.dismiss === Swal.DismissReason.cancel;
@@ -176,7 +180,7 @@ const Game = () => {
         dispatch(resetAnswers());
         dispatch(scoreReset());
         dispatch(removeMessage());
-        dispatch(alllowEntry());
+        // dispatch(alllowEntry());
         Nav("/");
       } else {
         result.dismiss === Swal.DismissReason.cancel;
@@ -218,14 +222,16 @@ const Game = () => {
   return (
     <div className="swiper-holder">
       <Swiper
+        className="mySwiper"
         pagination={{
           type: "fraction",
         }}
         navigation={true}
         modules={[Pagination, Navigation]}
-        className="mySwiper"
         initialSlide={!isReloaded ? currQustionId : 0}
         onRealIndexChange={(element) => handleCurrentQ(element.activeIndex)}
+        slidesPerView={"auto"}
+        spaceBetween={20}
       >
         {quizs.map((elem) => (
           <SwiperSlide
