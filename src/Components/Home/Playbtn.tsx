@@ -1,30 +1,19 @@
-import { useDispatch } from "react-redux";
-import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import useAlert from "../../Utilities/CustomHooks/useAlert";
+import usePlayAlertConfirm from "../../Utilities/CustomHooks/Play/usePlayAlertConfirm";
+import { infoIcon } from "../../Utilities/SweetAlert/Icons";
+import usePlayDismiss from "../../Utilities/CustomHooks/Play/usePlayDismiss";
 
 const Playbtn = () => {
-  const Nav = useNavigate();
-
-  const dispatch = useDispatch();
+  const alertBox = useAlert();
+  const onSubmitConfirm = usePlayAlertConfirm();
+  const dismissCall = usePlayDismiss();
 
   const handlePlay = () => {
-    Swal.fire({
+    alertBox({
       title: "Permission to switch to fullscreen mode?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(alllowEntry());
-        document.documentElement.requestFullscreen();
-        Nav("/play");
-      } else {
-        dispatch(denyEntry());
-        Nav("/");
-      }
+      icon: infoIcon,
+      confirmHookCall: onSubmitConfirm,
+      dismiss: dismissCall,
     });
   };
 

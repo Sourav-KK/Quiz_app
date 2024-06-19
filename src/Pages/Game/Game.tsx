@@ -13,35 +13,51 @@ import "../../Styles/swiper.css";
 
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../Utilities/Redux/Store";
-import { alllowEntry, denyEntry } from "../../Utilities/Redux/Slices/Auth";
+import { alllowEntry } from "../../Utilities/Redux/Slices/Auth";
 import {
   addAnswer,
   removeAnswer,
-  removeMessage,
   resetAnswers,
-  ressetCurrQustion,
-  scoreReset,
   setCurrQustion,
 } from "../../Utilities/Redux/Slices/Selected_Answers";
 import useScoreCounter from "../../Utilities/useScoreCounter";
 import useTimerCalculator from "../../Utilities/useTimerCalculator";
 
-import Swal from "sweetalert2";
-import Options from "../../Components/Game/Options";
+// import Swal from "sweetalert2";
 import { QuizI } from "../../Utilities/Interface";
+import Options from "../../Components/Game/Options";
 import CountDown from "../../Components/Game/CountDown";
 import ButtonHolders from "../../Components/Game/ButtonHolders";
+import useAlert from "../../Utilities/CustomHooks/useAlert";
+import useQuitAlertConfirm from "../../Utilities/CustomHooks/Quit/useQuitAlertConfirm";
+import useQuitAlertDismiss from "../../Utilities/CustomHooks/Quit/useQuitAlertDismiss";
+import useSubmitConfirm from "../../Utilities/CustomHooks/Submit/useSubmitConfirm";
+import useSubmitDismiss from "../../Utilities/CustomHooks/Submit/useSubmitDismiss";
+import { infoIcon, warningIcon, Swal } from "../../Utilities/SweetAlert/Icons";
+import useTimerAlert from "../../Utilities/CustomHooks/useTimerAlert";
+import Question from "../../Components/Game/Question";
+import useRefreshAlert from "../../Utilities/CustomHooks/Refresh/useRefreshAlert";
 
 const Game = () => {
   const Nav = useNavigate();
   const dispatch = useDispatch();
   const scoreCalculator = useScoreCounter();
 
+  // custom hooks
+  const alertBox = useAlert();
+  const quitConfirm = useQuitAlertConfirm();
+  const quitDimiss = useQuitAlertDismiss();
+  const submitConfirm = useSubmitConfirm();
+  const submitDismiss = useSubmitDismiss();
+  const timerAlertBox = useTimerAlert();
+  const refreshAlertBox = useRefreshAlert();
+
   const [quizs, setQuizs] = useState<QuizI[]>([]);
 
   const [timer, setTimer] = useState(
     parseInt(localStorage.getItem("timer") || "600") // Sets default timer
   );
+
   const timeerr = useTimerCalculator(timer);
 
   const allowEntry = useSelector((state: RootState) => state.Auth.isAuthorized);
@@ -58,35 +74,8 @@ const Game = () => {
 
   useEffect(() => {
     if (window.performance.navigation) {
-      console.log("page reloaded");
-
-      Swal.fire({
-        title: "Refreshing the page can reset your game data. Are you sure?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          dispatch(alllowEntry());
-          document.exitFullscreen();
-          setIsReloaded(true);
-          Nav("/");
-        }
-        if (result.isDismissed) {
-          document.body.requestFullscreen();
-          result.dismiss === Swal.DismissReason.cancel;
-        } else {
-          document.body.requestFullscreen();
-          result.dismiss === Swal.DismissReason.cancel;
-        }
-      });
+      refreshAlertBox({ setStates: setIsReloaded });
     }
-    return () => {
-      setIsReloaded(false);
-    };
   }, [isReloaded]);
 
   useEffect(() => {
@@ -131,28 +120,7 @@ const Game = () => {
       const score = scoreCalculator();
       console.log(score);
 
-      Swal.fire({
-        icon: "info",
-        title: "Times up !!!",
-        text: "Press OK to see results!",
-      })
-        .then((result) => {
-          if (result.isConfirmed) {
-            dispatch(ressetCurrQustion());
-            document.exitFullscreen();
-            Nav("/result");
-          } else {
-            dispatch(ressetCurrQustion());
-            document.exitFullscreen();
-            Nav("/result");
-          }
-        })
-        .catch((err) => {
-          console.error("err in sweeet laert:", err);
-          dispatch(ressetCurrQustion());
-          document.exitFullscreen();
-          Nav("/result");
-        });
+      timerAlertBox();
     }
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -165,59 +133,26 @@ const Game = () => {
   }, [timer, dispatch, Nav, allowEntry]);
 
   const handleQuit = () => {
-    Swal.fire({
+    alertBox({
       title: "Are you sure you want to exit?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        document.exitFullscreen();
-        dispatch(ressetCurrQustion());
-        dispatch(resetAnswers());
-        dispatch(scoreReset());
-        dispatch(removeMessage());
-        // dispatch(alllowEntry());
-        Nav("/");
-      } else {
-        result.dismiss === Swal.DismissReason.cancel;
-      }
+      icon: warningIcon,
+      confirmHookCall: quitConfirm,
+      dismiss: quitDimiss,
     });
   };
 
   const handleSubmit = () => {
     const score = scoreCalculator();
-    console.log("score value", score);
 
     if (score) {
-      Swal.fire({
+      alertBox({
         title: "Ready to submit?",
-        icon: "info",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-        cancelButtonText: "No",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          document.exitFullscreen()
-          dispatch(ressetCurrQustion());
-          dispatch(resetAnswers());
-          dispatch(scoreReset());
-          dispatch(removeMessage());
-          // dispatch(alllowEntry());
-          dispatch(denyEntry());
-          Nav("/result");
-        } else if (result.isDismissed) {
-          result.dismiss === Swal.DismissReason.cancel;
-        } else {
-          result.dismiss === Swal.DismissReason.cancel;
-        }
+        icon: infoIcon,
+        confirmHookCall: submitConfirm,
+        dismiss: submitDismiss,
       });
     } else {
+      // error alert & redirect to home page
       console.error("error in score counter");
     }
   };
@@ -235,7 +170,6 @@ const Game = () => {
   };
 
   const handleCurrentQ = (Qid: number) => {
-    console.log("Qid:", Qid);
     dispatch(setCurrQustion(Qid));
   };
 
@@ -261,11 +195,7 @@ const Game = () => {
           >
             <CountDown timeerr={timeerr} />
 
-            <div className="question-holder">
-              <h3>
-                {elem.id}.{elem.question}
-              </h3>
-            </div>
+            <Question elem={elem} />
 
             <Options
               elem={elem}
